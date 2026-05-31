@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Gym Tracker - Elite Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --border-glow: rgba(56, 189, 248, 0.15);
+            --accent-neon: #38bdf8;
+            --accent-purple: #818cf8;
+            --btn-gradient: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
+            --success: #10b981;
+            --danger: #f43f5e;
+            --text-white: #f8fafc;
+            --text-gray: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(129, 140, 248, 0.1) 0px, transparent 50%);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 24px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 35px 25px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px var(--border-glow);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #fff 40%, var(--accent-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .controls-row {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .week-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-white);
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: var(--btn-gradient);
+            color: #000;
+            border-color: transparent;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        #week-display {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--accent-purple);
+            min-width: 100px;
+        }
+
+        .day-select {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            border: 2px solid var(--accent-neon);
+            border-radius: 14px;
+            color: #fff;
+            background: #0b0f19;
+            cursor: pointer;
+            outline: none;
+            width: 100%;
+            max-width: 220px;
+            text-align: center;
+        }
+
+        .date-info {
+            color: var(--text-gray);
+            font-size: 13px;
+            margin-top: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Input Form Component */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 14px 18px;
+            background: #0b0f19;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            font-size: 15px;
+            color: #fff;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-neon);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+
+        .add-btn {
+            background: var(--btn-gradient);
+            color: #090d16;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Main Workout Cards */
+        .exercise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .exercise-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            padding: 20px;
+            background: rgba(11, 15, 25, 0.6);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+        }
+
+        .exercise-name {
+            font-weight: 700;
+            font-size: 19px;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .delete-btn {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .delete-btn:hover {
+            background: var(--danger);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        /* Subset/Set Substructure */
+        .subset-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .subset-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .subset-row span {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-neon);
+            min-width: 45px;
+        }
+
+        .subset-row label {
+            font-size: 12px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .subset-row input {
+            width: 65px;
+            padding: 6px;
+            background: #090d16;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .subset-row input:focus {
+            border-color: var(--accent-neon);
+        }
+
+        .add-set-btn {
+            background: rgba(16, 185, 129, 0.08);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 8px;
+            font-size: 13px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .add-set-btn:hover {
+            background: var(--success);
+            color: #090d16;
+            font-weight: 700;
+        }
+
+        /* Rest Day Dashboard */
+        .rest-day {
+            text-align: center;
+            padding: 45px 20px;
+            font-size: 20px;
+            color: var(--text-gray);
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 18px;
+            border: 1px dashed rgba(255, 255, 255, 0.08);
+        }
+
+        /* History Module Customizations */
+        .history-section {
+            margin-top: 35px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 25px;
+        }
+
+        .history-title {
+            font-size: 17px;
+            color: #fff;
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .history-list-container {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .history-list-container::-webkit-scrollbar, .modal-content::-webkit-scrollbar {
+            width: 5px;
+        }
+        .history-list-container::-webkit-scrollbar-thumb, .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(56, 189, 248, 0.2);
+        }
+
+        .history-badge {
+            background: rgba(129, 140, 248, 0.15);
+            color: var(--accent-purple);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Modal Overlay & Card Configuration */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 8, 15, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: #111827;
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-content h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1 id="day-heading">Gym Tracker</h1>
+        
+        <div class="controls-row">
+            <div class="week-nav">
+                <button class="nav-btn" onclick="changeWeek(-1)">◀ Prev</button>
+                <span id="week-display">This Week</span>
+                <button class="nav-btn" onclick="changeWeek(1)">Next ▶</button>
+            </div>
+
+            <select id="day-select" class="day-select" onchange="handleDayChange(this.value)">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+        </div>
+
+        <div class="date-info" id="date-display"></div>
+    </header>
+
+    <div id="tracker-area">
+        <div class="input-group">
+            <input type="text" id="exercise-input" placeholder="Add Exercise (e.g., Squats)">
+            <button class="add-btn" onclick="addExercise()">Add</button>
+        </div>
+
+        <div class="exercise-list" id="exercise-list">
+            </div>
+    </div>
+
+    <div id="rest-screen" class="rest-day" style="display: none;">
+        🛋️ Rest Day!<br>
+        <span style="font-size: 14px; color: var(--accent-neon); font-weight: 500; display:block; margin-top:8px;">Muscles grow when you rest. Recover well!</span>
+    </div>
+
+    <div class="history-section">
+        <div class="history-title">📚 Lifetime History Logs</div>
+        <div class="history-list-container" id="history-list"></div>
+    </div>
+</div>
+
+<div id="history-modal" class="modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 id="modal-title">Saved Workout</h3>
+        <div id="modal-body" style="margin-top: 15px;"></div>
+        <button class="add-btn" onclick="closeModal()" style="margin-top: 20px; width: 100%;">Close Log</button>
+    </div>
+</div>
+
+<script>
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    let weekOffset = 0; 
+    let currentSelectedDay = ""; 
+    let workoutData = []; 
+
+    function init() {
+        const realToday = new Date();
+        currentSelectedDay = daysOfWeek[realToday.getDay()]; 
+        
+        document.getElementById('day-select').value = currentSelectedDay;
+        
+        loadAndRenderDay();
+        renderHistoryList();
+    }
+
+    function getTargetDateObject() {
+        const realToday = new Date();
+        const currentDayIndex = realToday.getDay(); 
+        const targetDayIndex = daysOfWeek.indexOf(currentSelectedDay);
+        
+        let targetDate = new Date(realToday);
+        let dayDifference = targetDayIndex - currentDayIndex;
+        
+        targetDate.setDate(realToday.getDate() + dayDifference);
+        targetDate.setDate(targetDate.getDate() + (weekOffset * 7));
+        
+        return targetDate;
+    }
+
+    function getStorageKey() {
+        return getTargetDateObject().toISOString().split('T')[0]; 
+    }
+
+    function loadAndRenderDay() {
+        const dateDisplay = document.getElementById('date-display');
+        const weekDisplay = document.getElementById('week-display');
+        const storageKey = getStorageKey();
+        const targetDate = getTargetDateObject();
+
+        if (weekOffset === 0) {
+            weekDisplay.innerText = "This Week";
+        } else if (weekOffset === -1) {
+            weekDisplay.innerText = "Last Week";
+        } else if (weekOffset === 1) {
+            weekDisplay.innerText = "Next Week";
+        } else {
+            weekDisplay.innerText = weekOffset > 0 ? `In ${weekOffset} Weeks` : `${Math.abs(weekOffset)} Weeks Ago`;
+        }
+
+        dateDisplay.innerText = targetDate.toLocaleDateString('en-US', { 
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+        });
+
+        if (currentSelectedDay === "Sunday") {
+            document.getElementById('tracker-area').style.display = 'none';
+            document.getElementById('rest-screen').style.display = 'block';
+            document.getElementById('day-heading').innerText = "Happy Sunday!";
+            workoutData = [];
+        } else {
+            document.getElementById('tracker-area').style.display = 'block';
+            document.getElementById('rest-screen').style.display = 'none';
+            document.getElementById('day-heading').innerText = `${currentSelectedDay}'s Workout`;
+            
+            const savedData = localStorage.getItem(storageKey);
+            workoutData = savedData ? JSON.parse(savedData) : [];
+            renderExercises();
+        }
+    }
+
+    function changeWeek(direction) {
+        weekOffset += direction;
+        loadAndRenderDay();
+    }
+
+    function handleDayChange(newDay) {
+        currentSelectedDay = newDay;
+        loadAndRenderDay();
+    }
+
+    function saveToStorage() {
+        if (currentSelectedDay !== "Sunday") {
+            localStorage.setItem(getStorageKey(), JSON.stringify(workoutData));
+            renderHistoryList(); 
+        }
+    }
+
+    function renderExercises() {
+        const listContainer = document.getElementById('exercise-list');
+        listContainer.innerHTML = '';
+
+        workoutData.forEach((exercise, exIndex) => {
+            const card = document.createElement('div');
+            card.className = 'exercise-card';
+
+            const header = document.createElement('div');
+            header.className = 'exercise-header';
+            header.innerHTML = `
+                <div class="exercise-name">${exIndex + 1}. ${exercise.name}</div>
+                <button class="delete-btn" onclick="deleteExercise(${exIndex})">Remove</button>
+            `;
+            card.appendChild(header);
+
+            const subsetList = document.createElement('div');
+            subsetList.className = 'subset-list';
+
+            exercise.sets.forEach((set, setIndex) => {
+                const row = document.createElement('div');
+                row.className = 'subset-row';
+                row.innerHTML = `
+                    <span>Set ${setIndex + 1}</span>
+                    <label>Reps:</label>
+                    <input type="number" value="${set.reps}" oninput="updateSet(${exIndex}, ${setIndex}, 'reps', this.value)" min="0">
+                    <label style="margin-left:4px;">Wt (kg):</label>
+                    <input type="number" value="${set.weight}" oninput="updateSet(${exIndex}, ${setIndex}, 'weight', this.value)" min="0">
+                    <button class="delete-btn" style="padding: 2px 6px; margin-left:auto;" onclick="deleteSet(${exIndex}, ${setIndex})">✕</button>
+                `;
+                subsetList.appendChild(row);
+            });
+
+            card.appendChild(subsetList);
+
+            const addSetBtn = document.createElement('button');
+            addSetBtn.className = 'add-set-btn';
+            addSetBtn.innerText = '+ Add Set';
+            addSetBtn.onclick = () => addSetToExercise(exIndex);
+            card.appendChild(addSetBtn);
+
+            listContainer.appendChild(card);
+        });
+    }
+
+    function addExercise() {
+        const input = document.getElementById('exercise-input');
+        const name = input.value.trim();
+        if (name === '') return;
+
+        workoutData.push({ name: name, sets: [{ reps: 0, weight: 0 }] });
+        input.value = '';
+        saveToStorage();
+        renderExercises();
+    }
+
+    function deleteExercise(index) {
+        workoutData.splice(index, 1);
+        saveToStorage();
+        renderExercises();
+    }
+
+    function addSetToExercise(exIndex) {
+        workoutData[exIndex].sets.push({ reps: 0, weight: 0 });
+        saveToStorage();
+        renderExercises();
+    }
+
+    function updateSet(exIndex, setIndex, field, value) {
+        workoutData[exIndex].sets[setIndex][field] = value;
+        saveToStorage();
+    }
+
+    function deleteSet(exIndex, setIndex) {
+        workoutData[exIndex].sets.splice(setIndex, 1);
+        saveToStorage();
+        renderExercises();
+    }
+
+    function renderHistoryList() {
+        const historyContainer = document.getElementById('history-list');
+        historyContainer.innerHTML = '';
+        
+        const keys = Object.keys(localStorage).filter(key => /\d{4}-\d{2}-\d{2}/.test(key)).sort().reverse();
+
+        if(keys.length === 0) {
+            historyContainer.innerHTML = '<div style="color:var(--text-gray); font-size:13px; text-align:center; padding:15px;">No logged data yet. Let\'s crush it!</div>';
+            return;
+        }
+
+        keys.forEach(key => {
+            const data = JSON.parse(localStorage.getItem(key));
+            if(data && data.length > 0) {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                
+                const d = new Date(key + 'T00:00:00');
+                const day = daysOfWeek[d.getDay()];
+                
+                item.innerHTML = `<span><strong>${key}</strong> <span style="color:var(--text-gray); font-size:12px; margin-left:4px;">(${day})</span></span> <span class="history-badge">${data.length} Movements</span>`;
+                item.onclick = () => showHistoryModal(key, day, data);
+                historyContainer.appendChild(item);
+            }
+        });
+    }
+
+    function showHistoryModal(date, day, data) {
+        document.getElementById('modal-title').innerText = `Log: ${date} (${day})`;
+        const body = document.getElementById('modal-body');
+        body.innerHTML = '';
+
+        data.forEach((ex, i) => {
+            let html = `<div style="margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+                <strong style="color:var(--accent-neon); font-size:16px; font-family:'Space Grotesk'">${i+1}. ${ex.name}</strong><br>`;
+            ex.sets.forEach((s, si) => {
+                html += `<span style="color:var(--text-white); display:block; margin-top:4px; margin-left:12px; font-size:13px; background:rgba(255,255,255,0.02); padding:4px 8px; border-radius:6px;">Set ${si+1}: <b>${s.reps}</b> Reps @ <span style="color:var(--accent-purple); font-weight:700;">${s.weight} kg</span></span>`;
+            });
+            html += `</div>`;
+            body.innerHTML += html;
+        });
+
+        document.getElementById('history-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('history-modal').style.display = 'none';
+    }
+
+    init();
+</script>
+
+</body>
+</html>
